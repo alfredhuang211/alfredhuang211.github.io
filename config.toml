@@ -5,7 +5,7 @@ title = '个人学习记录'
 
 theme = "hugo-theme-techdoc"
 
-
+publishDir = "docs"
 
 [menu]
     [[menu.main]]
@@ -22,3 +22,4 @@ theme = "hugo-theme-techdoc"
         name = "Web3.0"
         url = "/web3"
         weight = 3
+
