@@ -2,9 +2,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>个人学习记录</title>
-    <link>http://example.org/web3/</link>
+    <link>https://alfredhuang211.github.io/web3/</link>
     <description>Recent content on 个人学习记录</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language><atom:link href="http://example.org/web3/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-cn</language><atom:link href="https://alfredhuang211.github.io/web3/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
