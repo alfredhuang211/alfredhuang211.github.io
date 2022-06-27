@@ -1,0 +1,24 @@
+baseURL = 'http://example.org/'
+languageCode = 'zh-cn'
+title = '个人学习记录'
+
+
+theme = "hugo-theme-techdoc"
+
+
+
+[menu]
+    [[menu.main]]
+        name = "Home"
+        url = "/"
+        weight = 1
+
+    [[menu.main]]
+        name = "Hugo"
+        url = "/hugo"
+        weight = 2
+
+    [[menu.main]]
+        name = "Web3.0"
+        url = "/web3"
+        weight = 3
