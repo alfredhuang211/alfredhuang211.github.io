@@ -1,25 +1,49 @@
 baseURL = 'https://alfredhuang211.github.io/'
-languageCode = 'zh-cn'
+languageCode = 'zh-CN'
 title = '个人学习记录'
 
+publishDir = "docs"  # output to docs dir for github pages
 
-theme = "hugo-theme-techdoc"
+# theme = "hugo-theme-techdoc"
+theme = "gohugo-theme-ananke"
 
-publishDir = "docs"
+[params]
+    recent_posts_number = 3
+    date_format = ":date_long"
+
+[sitemap]
+  changefreq = "monthly"
+  priority = 0.5
+  filename = "sitemap.xml"
 
 [menu]
     [[menu.main]]
+        identifier = 'main'
         name = "Home"
         url = "/"
         weight = 1
-
     [[menu.main]]
+        identifier = 'hugo'
         name = "Hugo"
         url = "/hugo"
         weight = 2
-
     [[menu.main]]
-        name = "Web3.0"
+        identifier = 'web3'
+        name = "Web 3.0"
         url = "/web3"
         weight = 3
-
+    [[menu.main]]
+        identifier = 'k8s'
+        name = "Kubernetes"
+        url = "/k8s"
+        weight = 4
+    [[menu.main]]
+        identifier = 'serverless'
+        name = "Serverless"
+        url = "/serverless"
+        weight = 5
+    [[menu.main]]
+        identifier = 'about'
+        name = "About"
+        url = "/about"
+        weight = 100

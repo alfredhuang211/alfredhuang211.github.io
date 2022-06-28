@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>个人学习记录</title>
+    <link>https://alfredhuang211.github.io/k8s/</link>
+    <description>Recent content on 个人学习记录</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 28 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/k8s/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>calico 安装及配置实现docker跨主机网络</title>
+      <link>https://alfredhuang211.github.io/k8s/calico-%E5%AE%89%E8%A3%85%E5%8F%8A%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0docker%E8%B7%A8%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/calico-%E5%AE%89%E8%A3%85%E5%8F%8A%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0docker%E8%B7%A8%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker swarm mode 配置使用</title>
+      <link>https://alfredhuang211.github.io/k8s/docker-swarm-mode-%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/docker-swarm-mode-%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker跨主机ipvlan网络配置</title>
+      <link>https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAipvlan%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAipvlan%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker跨主机macvlan网络配置</title>
+      <link>https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAmacvlan%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAmacvlan%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker跨主机overlay网络配置</title>
+      <link>https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAoverlay%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAoverlay%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kube-deploy docker multinode部署方式分析</title>
+      <link>https://alfredhuang211.github.io/k8s/kube-deploy-docker-multinode%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kube-deploy-docker-multinode%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kube-deploy docker multinode部署方式分析 二</title>
+      <link>https://alfredhuang211.github.io/k8s/kube-deploy-docker-multinode%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kube-deploy-docker-multinode%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90-%E4%BA%8C/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kube-up.sh kubernetes多节点部署方式分析</title>
+      <link>https://alfredhuang211.github.io/k8s/kube-up.sh-kubernetes%E5%A4%9A%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kube-up.sh-kubernetes%E5%A4%9A%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubeadm 进行多节点kubernetes 集群搭建</title>
+      <link>https://alfredhuang211.github.io/k8s/kubeadm-%E9%83%A8%E7%BD%B2%E5%A4%9A%E8%8A%82%E7%82%B9-kubernetes-%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kubeadm-%E9%83%A8%E7%BD%B2%E5%A4%9A%E8%8A%82%E7%82%B9-kubernetes-%E9%9B%86%E7%BE%A4/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubeadm代码分析</title>
+      <link>https://alfredhuang211.github.io/k8s/kubeadm-%E9%83%A8%E7%BD%B2%E5%A4%9A%E8%8A%82%E7%82%B9-kubernetes-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kubeadm-%E9%83%A8%E7%BD%B2%E5%A4%9A%E8%8A%82%E7%82%B9-kubernetes-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes 学习记录</title>
+      <link>https://alfredhuang211.github.io/k8s/kubernetes%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kubernetes%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes 容器方式部署</title>
+      <link>https://alfredhuang211.github.io/k8s/kubernetes-%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kubernetes-%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E9%83%A8%E7%BD%B2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes 非容器方式多节点部署</title>
+      <link>https://alfredhuang211.github.io/k8s/kubernetes-%E9%9D%9E%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E5%A4%9A%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/kubernetes-%E9%9D%9E%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E5%A4%9A%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>logstash elk 安装及使用</title>
+      <link>https://alfredhuang211.github.io/k8s/logstash-elk-%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/logstash-elk-%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>基于jenkins和kubernetes的ci工作流</title>
+      <link>https://alfredhuang211.github.io/k8s/%E5%9F%BA%E4%BA%8Ejenkins%E5%92%8Ckubernetes%E7%9A%84ci%E5%B7%A5%E4%BD%9C%E6%B5%81/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/%E5%9F%BA%E4%BA%8Ejenkins%E5%92%8Ckubernetes%E7%9A%84ci%E5%B7%A5%E4%BD%9C%E6%B5%81/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>最简化的 kubernetes 部署</title>
+      <link>https://alfredhuang211.github.io/k8s/%E6%9C%80%E7%AE%80%E5%8C%96%E7%9A%84-kubernetes-%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/k8s/%E6%9C%80%E7%AE%80%E5%8C%96%E7%9A%84-kubernetes-%E9%83%A8%E7%BD%B2/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

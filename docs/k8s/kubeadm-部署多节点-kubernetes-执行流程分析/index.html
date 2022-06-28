@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>kubeadm代码分析 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="kubeadm代码分析" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/kubeadm-%E9%83%A8%E7%BD%B2%E5%A4%9A%E8%8A%82%E7%82%B9-kubernetes-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="kubeadm代码分析">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="336">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubeadm代码分析"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">kubeadm代码分析</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="kubeadm代码分析">kubeadm代码分析</h1>
+<h2 id="kubeadm-init-分析">kubeadm init 分析</h2>
+<ol>
+<li>
+<p>命令行处理,收取各种参数</p>
+</li>
+<li>
+<p>Run函数执行</p>
+</li>
+</ol>
+<p>CreateTokenAuthFile : 通过设置的 token 或随机生成 token ,在 /etc/kubernetes/pki 下创建 token.csv 文件,文件内容例如 <code>9d8e3b90523c5e3f,kubeadm-node-csr,f387963f-d31b-11e6-bbc3-080027b2ff68,system:kubelet-bootstrap</code></p>
+<p>WriteStaticPodManifests : 通过pod配置,生成apiserver,controller manager,scheduler, etcd的配置json文件,放置在 <code>/etc/kubernetes/manifests</code> 下.</p>
+<blockquote>
+<p>各配置文件分析:</p>
+</blockquote>
+<blockquote>
+<p>etcd.json: Pod类型, 包括三个 hostpath, <code>/etc/ssl/certs</code>, <code>/var/lib/etcd</code>, <code>/etc/kubernetes</code>, 使用 <code>etcd-amd64:3.0.14-kubeadm</code> 镜像启动容器, 挂载路径分别为 <code>/etc/ssl/certs</code>, <code>/var/etcd</code>, <code>/etc/kubernetes/</code>, 启动命令 <code>etcd --listen-client-urls=http://127.0.0.1:2379 --advertise-client-urls=http://127.0.0.1:2379 --data-dir=/var/etcd/data</code>, 网络使用 host 模式, 带有 cpu requests, livenessprobe, securityContext.</p>
+</blockquote>
+<blockquote>
+<p>kube-apiserver.json: Pod类型, 包括 <code>/etc/ssl/certs</code>, <code>/etc/kubernetes</code> 两个 hostpath, 使用 <code>kube-apiserver-amd64:v1.5.1</code> 镜像启动容器, 挂载路径分别为 <code>/etc/ssl/certs</code>, <code>/etc/kubernetes/</code>, 启动命令中较特殊的为 <code>service-account-key-file client-ca-file tls-cert-file tls-private-key-file token-auth-file kubelet-preferred-address-types anonymous-auth</code>, 网络使用 host 模式, 带有 cpu requests, livenessprobe.</p>
+</blockquote>
+<blockquote>
+<p>kube-controller-manager.json: Pod类型, 同api-server一样的hostpath和挂载路径, 使用 <code>kube-controller-manager-amd64:v1.5.1</code> 镜像启动容器, 启动命令中的特殊处为 <code>leader-elect cluster-name root-ca-file service-account-private-key-file cluster-signing-cert-file cluster-signing-key-file insecure-experimental-approve-all-kubelet-csrs-for-group allocate-node-cidrs cluster-cidr </code>, 网络使用 host 模式, 带有 cpu requests, livenessprobe.</p>
+</blockquote>
+<blockquote>
+<p>kube-scheduler.json: Pod类型, 使用 <code>kube-scheduler-amd64:v1.5.1</code> 镜像启动容器, 启动命令中带有 <code>leader-elect</code>, 网络使用 host 模式, 带有 cpu requests, livenessprobe.</p>
+</blockquote>
+<p>CreatePKIAssets: 收集整理对外ip地址, dns地址, 生成rsa的私钥 cakey, 使用key生成自签名的cacert, 使用 <code>ca-pub.pem</code>, <code>ca-key.pem</code>, ca.pem 作为公钥,私钥和证书的文件名, 将 privatekey, 对应的publickey, cacert 分别写入对应文件. 使用集群内dns名,内部cidr相关的ip, 使用 cakey 和 cacert, 生成新的 私钥 key 和对应的 cert. 使用新生成的 key 和 cert, 使用 <code>apiserver-pub.pem</code>, <code>apiserver-key.pem</code>, <code>apiserver.pem</code> 作为公钥,私钥和证书的文件名,将其存入.生成新的rsa私钥,作为sa私钥,生成对应的公钥,并写入 <code>sa-key.pem</code> 和 <code>sa-pub.pem</code>. cakey和cacert返回.所有相关私钥,公钥和证书的放置位置均为 <code>/etc/kubernetes/pki</code></p>
+<p>CreateCertsAndConfigForClients: 使用&quot;kubernetes&quot;为集群名, 默认 https 地址为服务器名, cacert作为证书生成基础客户端配置, 通过cacert和cakey生成新的key和cert, 使用新生成的key和cert,配合基础客户端,生成kubelet和admin用的客户端配置</p>
+<p>WriteKubeconfigIfNotExists: 将上步生成的客户端配置, 写入对应名称的 conf 文件, 主要就是 <code>admin.conf</code> 和 <code>kubelet.conf</code>, 放置位置为 <code>/etc/kubernetes</code>, 目前两文件内容相同, 内部均保存了 admin 配置和 kubelet 配置.</p>
+<p>CreateClientAndWaitForAPI: 使用 admin 配置,创建 client 配置, 并用配置创建 client, 循环等待 client 完成连接, 通过 client 检查集群组件情况, 再次循环等待, 通过 client 获取到至少一个 node 完成注册. 创建,获取,删除 dummy deployment 用于检查集群已准备好. 返回 client.</p>
+<p>UpdateMasterRoleLabelsAndTaints: 通过 client 更新 node 节点元数据 Taints ,标记为<code>dedicated=master:NoSchedule</code>, 确保普通 pod 调度不会到 master 上.</p>
+<p>CreateDiscoveryDeploymentAndSecret: 通过 cacert 生成新的相关证书和配置的 json 文件,作为 secret, 保存为 clusterinfo 的名称. 创建名称为 kube-discovery 的 deployment, 启动 pod 并挂载使用 secret. 循环检查确保 deployment 完成启动.</p>
+<p>CreateEssentialAddons: 创建 deamonset 类型的 kubeproxy 并启动, 创建 deployment 类型的 kube-dns 并启动, 创建 kube-dns 的服务.</p>
+<p>generateJoinArgs: 使用 joinArgsTemplateLiteral 内容作为模版,根据各项配置,生成 node 上需要执行的 join 字段并输出.</p>
+<h2 id="kubeadm-join-分析">kubeadm join 分析</h2>
+<ol>
+<li>
+<p>命令行处理,收取各种参数</p>
+</li>
+<li>
+<p>Run函数执行</p>
+</li>
+</ol>
+<p>RetrieveTrustedClusterInfo: 使用 master 地址, discovery 端口, token 前部, 生成相应的 url, 通过 http get 获取请求响应的数据, 通过 token 后部解密, 获取集群的相关配置信息.</p>
+<p>EstablishMasterConnection: 通过集群信息中的 endpoints, cacert, 创建client, 使用多个线程分别连接 endpoints 中的不通 endpoint. 通过获取 server 版本, certificate api 获取内容, 完成对 endpoint 的检查和可用判断.返回已经建立好的连接.</p>
+<p>PerformTLSBootstrap: 使用已建立的连接创建认证请求 client, 创建 ecdsa 私钥, 通过 client, 请求节点认证信息, 从 api-server 获取 cert, 通过连接的 endpoint, cacert 生成基础信息, 通过基础信息, 自身节点名, 私钥和 cert, 生成最终的节点配置. 返回最终配置.</p>
+<p>WriteKubeconfigIfNotExists: 将最终配置写入配置文件, 默认文件名为 <code>kubelet.conf</code>, 默认位置为 <code>/etc/kubernetes</code>.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

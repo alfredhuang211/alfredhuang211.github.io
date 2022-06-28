@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>kube-deploy docker multinode部署方式分析 二 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="kube-deploy docker multinode部署方式分析 二" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/kube-deploy-docker-multinode%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90-%E4%BA%8C/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="kube-deploy docker multinode部署方式分析 二">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="616">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kube-deploy docker multinode部署方式分析 二"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">kube-deploy docker multinode部署方式分析 二</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="kube-deploy-docker-multinode部署方式分析-二">kube-deploy docker multinode部署方式分析 二</h1>
+<p>标签： kubernetes k8s kube-deploy 部署 容器</p>
+<hr>
+<p>在 <code>kube-deploy docker multinode部署方式分析</code> 中已经进行了脚本启动 kubernetes 的初步分析, 其中 master.sh 脚本最终仅分析到 kubelet 容器的启动. 在 kubelet 启动后, 最终以若干 pod 的形式完成 apiserver, controller-manager, scheduler 等组件的启动,将在此处进一步分析</p>
+<h2 id="master-部署分析">master 部署分析</h2>
+<p>入口为 master.sh, 最终的启动容器命令为:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -d <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --net<span style="color:#f92672">=</span>host <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --pid<span style="color:#f92672">=</span>host <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --privileged <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --restart<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>RESTART_POLICY<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --name kube_kubelet_<span style="color:#66d9ef">$(</span>kube::helpers::small_sha<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">${</span>KUBELET_MOUNTS<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">${</span>IMAGE_HYPERKUBE<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>K8S_VERSION<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    /hyperkube kubelet <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --allow-privileged <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --api-servers<span style="color:#f92672">=</span>http://localhost:8080 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --config<span style="color:#f92672">=</span>/etc/kubernetes/manifests-multi <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --cluster-dns<span style="color:#f92672">=</span>10.0.0.10 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --cluster-domain<span style="color:#f92672">=</span>cluster.local <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      <span style="color:#e6db74">${</span>CNI_ARGS<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      <span style="color:#e6db74">${</span>CONTAINERIZED_FLAG<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --hostname-override<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>IP_ADDRESS<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --pod-infra-container-image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>IMAGE_PAUSE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>其中容器的启动命令为 <code>/hyperkube kubelet</code>, 代表实际启动的是 kubelet 组件.其中关注的两个配置为 <code>--api-servers=http://localhost:8080</code>, <code>--config=/etc/kubernetes/manifests-multi</code>.</p>
+<p>其中 api-servers 指明了 kubelet 将pod信息通知到哪里. 此时 api-server 并没有启动, 但是仍然可以设置此值, 可以知道 kubelet 会容忍 api-server 暂时性的不在或掉线等情况,并在重新连接成功后通知 api-server 自己所管理的 pod 等信息.</p>
+<p>另外 config 指明了 kubelet 监控的目录.因为 kubelet 除了根据 apiserver 启动 pod, 也能根据文件或 http endpoint 或作为 http server 三种方式来启动 pod. 此处即使用了根据文件来启动 pod. 监控的文件夹为镜像内的 <code>/etc/kubernetes/manifests-multi</code> 目录</p>
+<p>此 manifests-multi 目录下存在 <code>master-multi.json</code>, <code>kube-proxy.json</code>, <code>addon-manager.json</code> 三个json文件.接下来分别分析这三个文件.</p>
+<h3 id="master-multijson">master-multi.json</h3>
+<p>文件内容如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&#34;apiVersion&#34;</span>: <span style="color:#e6db74">&#34;v1&#34;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;Pod&#34;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&#34;metadata&#34;</span>: {
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;k8s-master&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;namespace&#34;</span>: <span style="color:#e6db74">&#34;kube-system&#34;</span>
+</span></span><span style="display:flex;"><span>},
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&#34;spec&#34;</span>:{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;hostNetwork&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;containers&#34;</span>:[
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;controller-manager&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;gcr.io/google_containers/hyperkube-amd64:v1.3.6&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;command&#34;</span>: [
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;/hyperkube&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;controller-manager&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--master=127.0.0.1:8080&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--service-account-private-key-file=/srv/kubernetes/server.key&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--root-ca-file=/srv/kubernetes/ca.crt&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--min-resync-period=3m&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--v=2&#34;</span>
+</span></span><span style="display:flex;"><span>      ],
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;volumeMounts&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;data&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;mountPath&#34;</span>: <span style="color:#e6db74">&#34;/srv/kubernetes&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      ]
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;apiserver&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;gcr.io/google_containers/hyperkube-amd64:v1.3.6&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;command&#34;</span>: [
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;/hyperkube&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;apiserver&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--service-cluster-ip-range=10.0.0.1/24&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--insecure-bind-address=0.0.0.0&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--etcd-servers=http://127.0.0.1:4001&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--client-ca-file=/srv/kubernetes/ca.crt&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--basic-auth-file=/srv/kubernetes/basic_auth.csv&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--min-request-timeout=300&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--tls-cert-file=/srv/kubernetes/server.cert&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--tls-private-key-file=/srv/kubernetes/server.key&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--token-auth-file=/srv/kubernetes/known_tokens.csv&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--allow-privileged=true&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--v=2&#34;</span>
+</span></span><span style="display:flex;"><span>      ],
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;volumeMounts&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;data&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;mountPath&#34;</span>: <span style="color:#e6db74">&#34;/srv/kubernetes&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      ]
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;scheduler&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;gcr.io/google_containers/hyperkube-amd64:v1.3.6&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;command&#34;</span>: [
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;/hyperkube&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;scheduler&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--master=127.0.0.1:8080&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;--v=2&#34;</span>
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;setup&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;gcr.io/google_containers/hyperkube-amd64:v1.3.6&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;command&#34;</span>: [
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;/setup-files.sh&#34;</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#e6db74">&#34;IP:10.0.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local&#34;</span>
+</span></span><span style="display:flex;"><span>      ],
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;volumeMounts&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;data&#34;</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;mountPath&#34;</span>: <span style="color:#e6db74">&#34;/data&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      ]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;volumes&#34;</span>: [
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;data&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;emptyDir&#34;</span>: {}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  ]
+</span></span><span style="display:flex;"><span> }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>此处启动了一个 pod, 名称为 k8s-master, 使用 namespace 为 kube-system. pod 中共有4个容器, 分别运行 apiserver, controller-manager, scheduler 和 setup-files.sh. 前三个为 kubernetes 的集群组件, 最后的一个用于生成相关认证文件. 认证文件的交换利用了 pod 的 volumes emptyDir 特性, 可以将同一卷挂载到不同容器中并均可以读写 . pod 中有个名称为 data 的卷,在 setup 容器中挂载在 /data 下, 在 apiserver 容器中挂载在 /srv/kubernetes 下, 在 controller-manager 容器中挂载在 /srv/kubernetes 下.</p>
+<p>setup-files.sh 主要做的事情包括:</p>
+<ol>
+<li>在 ca.crt 不存在时, 调用 make-ca-cert.sh, 通过使用 easy-rsa, 根据 ip 和 设置的 dns 名称,生成 ca.crt, server.cert, server.key, kubecfg.crt, kubecfg.key 这几个认证用的相关文件.</li>
+<li>在 basic_auth.csv 不存在时, 使用 <code>admin,admin,admin</code> 生成此文件.</li>
+<li>在 known_tokens.csv 不存在时, 使用 <code>随机值,admin,admin</code>, <code>随机值,kubelet,kubelet</code>, <code>随机值,kube_proxy,kube_proxy</code> 生成此文件.</li>
+<li>执行完毕后死循环 sleep.</li>
+</ol>
+<h3 id="kube-proxyjson">kube-proxy.json</h3>
+<p>kube-proxy.json文件内容为:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;apiVersion&#34;</span>: <span style="color:#e6db74">&#34;v1&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;Pod&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;metadata&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;k8s-proxy&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;namespace&#34;</span>: <span style="color:#e6db74">&#34;kube-system&#34;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;spec&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;hostNetwork&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;containers&#34;</span>: [
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;kube-proxy&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;gcr.io/google_containers/hyperkube-amd64:v1.3.6&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;command&#34;</span>: [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;/hyperkube&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;proxy&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;--master=http://127.0.0.1:8080&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;--v=2&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;--resource-container=\&#34;\&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        ],
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;securityContext&#34;</span>: {
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;privileged&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>此处启动了一个 pod, 名称为 k8s-proxy, namespace 为 kube-system. pod中运行一个容器 kube-proxy.</p>
+<h3 id="addon-managerjson">addon-manager.json</h3>
+<p>文件内容为:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;apiVersion&#34;</span>: <span style="color:#e6db74">&#34;v1&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;Pod&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;metadata&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;kube-addon-manager&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;namespace&#34;</span>: <span style="color:#e6db74">&#34;kube-system&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;v1&#34;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;spec&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;hostNetwork&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;containers&#34;</span>: [
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;kube-addon-manager&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;gcr.io/google-containers/kube-addon-manager-amd64:v4&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;resources&#34;</span>: {
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;requests&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;cpu&#34;</span>: <span style="color:#e6db74">&#34;5m&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;memory&#34;</span>: <span style="color:#e6db74">&#34;50Mi&#34;</span>
+</span></span><span style="display:flex;"><span>          }
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;volumeMounts&#34;</span>: [
+</span></span><span style="display:flex;"><span>          {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;addons&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;mountPath&#34;</span>: <span style="color:#e6db74">&#34;/etc/kubernetes/&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;readOnly&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>          }
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>      },
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;kube-addon-manager-data&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;gcr.io/google_containers/hyperkube-amd64:v1.3.6&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;command&#34;</span>: [
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;/copy-addons.sh&#34;</span>
+</span></span><span style="display:flex;"><span>        ],
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;volumeMounts&#34;</span>: [
+</span></span><span style="display:flex;"><span>          {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;addons&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;mountPath&#34;</span>: <span style="color:#e6db74">&#34;/srv/kubernetes/&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;readOnly&#34;</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>          }
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;volumes&#34;</span>:[
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;addons&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;emptyDir&#34;</span>: {}
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>此处启动了一个 pod, 名称为 kube-addon-manager, namespace 为 kube-system. pod中运行一个容器 kube-proxy. pod中运行了两个容器, kube-addon-manager 和 kube-addon-manager-data. 通过 addons 卷, 分别挂载在 /etc/kubernetes/ 和 /srv/kubernetes/ 下完成数据交换.</p>
+<p>kube-addon-manager 使用镜像自带启动命令,并进行了 cpu 和内存的限制; kube-addon-manager-data 执行了 copy-addons.sh 脚本.</p>
+<p>其中 kube-addon-manager 的启动命令为<code>/opt/kube-addons.sh</code>, copy-addons.sh 脚本执行的命令为 <code>cp -r /etc/kubernetes/* /srv/kubernetes/</code>.</p>
+<p>kube-addons.sh 执行的内容如下:</p>
+<ol>
+<li>创建 add-ons 使用的 namespace, 使用 /opt/namespace.yaml 文件,创建的 namespace 名称为 kube-system.</li>
+<li>获取 kube-system 的 serviceaccount.</li>
+<li>查询 /etc/kubernetes/admission-controls 下的 yaml 或 json 文件,并进行添加.当前无此文件夹.</li>
+<li>执行死循环,使用 kube-addon-update.sh 脚本监控 /etc/kubernetes/addon 目录.</li>
+<li>kube-addon-update.sh 中,扫描目录下的文件,根据文件中描述的 kubernetes 类型,进行对象的创建或删除或更新.</li>
+<li>目录下的文件现有dashboard-controller.yaml, dashboard-service.yaml, skydns-rc.yaml,skydns-svc.yaml.</li>
+<li>通过这几个文件,会启动 dashboard 和 dns 的 rc 和 service.</li>
+</ol>
+<h2 id="worker-部署分析">worker 部署分析</h2>
+<p>入口为 worker.sh, 最终的启动容器命令为:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -d <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --net<span style="color:#f92672">=</span>host <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --pid<span style="color:#f92672">=</span>host <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --privileged <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --restart<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>RESTART_POLICY<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --name kube_kubelet_<span style="color:#66d9ef">$(</span>kube::helpers::small_sha<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">${</span>KUBELET_MOUNTS<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">${</span>IMAGE_HYPERKUBE<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>K8S_VERSION<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    /hyperkube kubelet <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --allow-privileged <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --api-servers<span style="color:#f92672">=</span>http://<span style="color:#e6db74">${</span>MASTER_IP<span style="color:#e6db74">}</span>:8080 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --cluster-dns<span style="color:#f92672">=</span>10.0.0.10 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --cluster-domain<span style="color:#f92672">=</span>cluster.local <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      <span style="color:#e6db74">${</span>CNI_ARGS<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      <span style="color:#e6db74">${</span>CONTAINERIZED_FLAG<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --hostname-override<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>IP_ADDRESS<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --pod-infra-container-image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>IMAGE_PAUSE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>并根据需要启动proxy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -d <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --net<span style="color:#f92672">=</span>host <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --privileged <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --name kube_proxy_<span style="color:#66d9ef">$(</span>kube::helpers::small_sha<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --restart<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>RESTART_POLICY<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">${</span>IMAGE_HYPERKUBE<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>K8S_VERSION<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    /hyperkube proxy <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        --master<span style="color:#f92672">=</span>http://<span style="color:#e6db74">${</span>MASTER_IP<span style="color:#e6db74">}</span>:8080 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        --v<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

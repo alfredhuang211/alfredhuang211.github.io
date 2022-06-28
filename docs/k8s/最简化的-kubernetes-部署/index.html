@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>最简化的 kubernetes 部署 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="最简化的 kubernetes 部署" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/%E6%9C%80%E7%AE%80%E5%8C%96%E7%9A%84-kubernetes-%E9%83%A8%E7%BD%B2/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="最简化的 kubernetes 部署">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="362">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="最简化的 kubernetes 部署"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">最简化的 kubernetes 部署</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="最简化的-kubernetes-部署">最简化的 kubernetes 部署</h1>
+<p>标签：kubernetes 部署 k8s hyperkube flannel</p>
+<hr>
+<p>本文说明最简单的 kubernetes 部署过程, 部署使用二进制文件, 从中可以了解 kubernetes 各组件的基本工作方式和组件协同方式.</p>
+<h2 id="部署工具">部署工具</h2>
+<p>二进制文件: hyperkube, etcd, etcdctl, flanneld, kubectl</p>
+<p>各文件说明:</p>
+<p><code>etcd</code>: 启动 etcd 服务或服务集群.</p>
+<p><code>etcdctl</code>: 检查 etcd 启动情况, 在 etcd 中读写一些值.</p>
+<p><code>flanneld</code>:  启动 flannel 网络.</p>
+<p><code>hyperkube</code>:  启动 kubernetes 各组件.</p>
+<p><code>kubectl</code>: 进行 kubernetes 配置操作.</p>
+<h2 id="部署环境">部署环境</h2>
+<p>演示环境使用 ubunut 16.04. 由于二进制文件本身为 x64 版本,实际可以考虑部署并不依赖操作系统.</p>
+<h2 id="etcd-启动">etcd 启动</h2>
+<p>执行命令如下:</p>
+<pre tabindex="0"><code>nohup ./etcd -name kube -listen-client-urls http://0.0.0.0:2379 -advertise-client-urls http://192.168.4.240:2379 &gt; etcd.out &amp;
+</code></pre><h2 id="flannel-配置及启动">flannel 配置及启动</h2>
+<p>执行如下命令在 etcd 中设置好 flannel 的相关运行参数:</p>
+<pre tabindex="0"><code>etcdctl mk /coreos.com/network/config &#39;{ &#34;Network&#34;: &#34;172.17.0.0/16&#34;,&#34;Backend&#34;:{&#34;Type&#34;:&#34;vxlan&#34;} }&#39;
+</code></pre><p>其中 <code>172.17.0.0/16</code> 指明了 flannel 可以使用的网段</p>
+<p>执行如下命令启动 flannel :</p>
+<pre tabindex="0"><code>nohup ./flanneld --etcd-endpoints=http://192.168.4.240:2379  --ip-masq  --iface=192.168.4.240 &gt; flannel.out &amp;
+</code></pre><p>其中 etcd-endpoints 参数要求指向 etcd 的服务位置, iface 使用主机ip地址.</p>
+<p>此时使用 <code>ifconfig</code> 可以看到多了 flannel 的网络设备, 通过 <code>cat /run/flannel/subnet.env</code> 可以看到本机 flannel 分配的相关信息,其中 FLANNEL_SUBNET 需要用来设置为 docker 的 bip, mtu 可设置为 docker 的 mtu.
+FLANNEL_NETWORK=172.16.0.0/16
+FLANNEL_SUBNET=172.16.46.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true</p>
+<p>通过 <code>ifconfig docker0 172.17.41.1/24</code> 命令, 将 FLANNEL_SUBNET 的值设置给 docker0.</p>
+<p>flannel 启动及 docker0 配置需要在每台 minion主机上都执行,确保接入集群运行 pod 的 docker 都正确配置了 flannel 网络.</p>
+<h2 id="master-节点服务启动">master 节点服务启动</h2>
+<p>apiserver 启动:</p>
+<pre tabindex="0"><code>nohup ./hyperkube apiserver \
+--insecure-bind-address=0.0.0.0 --insecure-port=8080 \
+--etcd-servers=http://192.168.4.240:2379 --logtostderr=true \
+--admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ResourceQuota \
+--service-node-port-range=30000-32767 \
+--allow-privileged=true \
+--service-cluster-ip-range=10.0.1.0/24 \
+--advertise-address=192.168.4.240 \
+&gt; apiserver.out &amp;
+</code></pre><p>controller-manager 启动:</p>
+<pre tabindex="0"><code>nohup ./hyperkube controller-manager \
+--master=192.168.4.240:8080 \
+--logtostderr=true \
+&gt; controller.out &amp;
+</code></pre><p>scheduler 启动:</p>
+<pre tabindex="0"><code>nohup ./hyperkube scheduler \
+--master=192.168.4.240:8080 \
+--logtostderr=true \
+&gt; scheduler.out &amp;
+</code></pre><p>其中 etcd 地址, master 地址均根据实际情况进行填写.</p>
+<p>此时可以通过 kubectl 查看相关信息:</p>
+<p>通过 <code>./kubectl version</code> 查看拉起的 server 版本信息</p>
+<p>通过 <code>./kubectl get cs</code> 查看组件健康状态</p>
+<h2 id="minion-节点服务启动">minion 节点服务启动</h2>
+<p>进行节点 flannel 的启动和配置.</p>
+<p>启动 proxy:</p>
+<pre tabindex="0"><code>nohup ./hyperkube proxy \
+--hostname-override=192.168.4.215 \
+--master=http://192.168.4.240:8080 \
+--logtostderr=true \
+&gt; proxy.out &amp;
+</code></pre><p>启动 kubelet:</p>
+<pre tabindex="0"><code>nohup ./hyperkube kubelet \
+--hostname-override=192.168.4.215 \
+--api-servers=http://192.168.4.240:8080 \
+--logtostderr=true \
+--cluster-dns=192.168.3.10  --cluster-domain=cluster.local \
+--allow-privileged=true \
+&gt; kubelet.out &amp;
+</code></pre><p>命令中的 hostname-override 可以自行起名, 或用当前主机 ip 地址替代.</p>
+<p>命令中的 master 和 api-server 都是使用 master 服务地址.</p>
+<h2 id="检查及验证">检查及验证</h2>
+<p>在 master 上使用 <code>kubectl</code> 检查节点情况:</p>
+<p>通过<code>./kubectl get no</code> 能够查看节点的准备情况.</p>
+<p>在 master 上使用命令启动 nginx :</p>
+<p>通过命令 <code>./kubectl run my-nginx --image=nginx --replicas=2 --port=80</code> 在 kubernetes 中启动 nginx 服务.</p>
+<p>启动后可通过 <code>./kubectl get po</code> 查看 pod 的启动情况.</p>
+<p>由于在启动 pod 时, 集群会拉取 pause 镜像,可以通过 <code>echo &quot;220.255.2.153 www.gcr.io&quot; &gt;&gt; /etc/hosts</code> <code>echo &quot;220.255.2.153 gcr.io&quot; &gt;&gt; /etc/hosts</code> 来确保拉取镜像能够成功.</p>
+<h2 id="注意">注意</h2>
+<p>由于这种方式部署,未考虑 kubernetes 的认证或 service account, 在拉起 kubernetes dashboard 的时候, 会使得 pod 处于 CrashLoopBackOff 的状态. docker logs 查看 dashboard 容器, 可以看到报错内容内有 &ldquo;it has invalid apiserver certificates or service accounts configuration&rdquo;</p>
+<p>后续将进一步分析 apiserver certificates 和 service accounts 配置.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

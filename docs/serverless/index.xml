@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>个人学习记录</title>
+    <link>https://alfredhuang211.github.io/serverless/</link>
+    <description>Recent content on 个人学习记录</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 28 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/serverless/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用 Serverless 进行 AI 预测推理</title>
+      <link>https://alfredhuang211.github.io/serverless/%E4%BD%BF%E7%94%A8serverless%E8%BF%9B%E8%A1%8Cai%E6%8E%A8%E7%90%86/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/serverless/%E4%BD%BF%E7%94%A8serverless%E8%BF%9B%E8%A1%8Cai%E6%8E%A8%E7%90%86/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>使用腾讯云 SCF 云函数压缩 COS 对象存储文件</title>
+      <link>https://alfredhuang211.github.io/serverless/%E4%BD%BF%E7%94%A8scf%E4%BA%91%E5%87%BD%E6%95%B0%E5%8E%8B%E7%BC%A9cos%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/serverless/%E4%BD%BF%E7%94%A8scf%E4%BA%91%E5%87%BD%E6%95%B0%E5%8E%8B%E7%BC%A9cos%E6%96%87%E4%BB%B6/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>kubernetes 容器方式部署 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="kubernetes 容器方式部署" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/kubernetes-%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E9%83%A8%E7%BD%B2/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="kubernetes 容器方式部署">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="475">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes 容器方式部署"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">kubernetes 容器方式部署</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="kubernetes-容器方式部署">kubernetes 容器方式部署</h1>
+<p>标签： kubernetes k8s 容器 安装部署</p>
+<hr>
+<h2 id="部署环境">部署环境</h2>
+<p>系统环境: ubuntu 16.04, docker 1.12</p>
+<p>设备准备: 两台设备, 分别为192.168.4.220/219, 其中 220 部署为 master, 219 部署为 worker.</p>
+<p>部署使用: 使用 <a href="https://github.com/kubernetes/kube-deploy">kube-deploy</a> 项目完成部署</p>
+<p>注意事项: 由于部署过程中会去 gcr.io 上下载镜像, 国内环境可能导致下载失败.可以将 <code>220.255.2.153 gcr.io </code> <code>220.255.2.153 storage.googleapis.com</code> 添加到 hosts 文件中确保解析能够正确, 镜像能够下载.</p>
+<h2 id="部署操作">部署操作</h2>
+<h3 id="master-部署">master 部署</h3>
+<p>在master主机上执行如下命令:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git clone https://github.com/kubernetes/kube-deploy
+</span></span><span style="display:flex;"><span>$ cd kube-deploy/docker-multinode
+</span></span><span style="display:flex;"><span>$ ./master.sh
+</span></span></code></pre></div><p>输出如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> K8S_VERSION is set to: v1.3.5
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> ETCD_VERSION is set to: 2.2.5
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> FLANNEL_VERSION is set to: 0.5.5
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> FLANNEL_IPMASQ is set to: true
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> FLANNEL_NETWORK is set to: 10.1.0.0/16
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> FLANNEL_BACKEND is set to: udp
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> RESTART_POLICY is set to: unless-stopped
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> MASTER_IP is set to: localhost
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> ARCH is set to: amd64
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> IP_ADDRESS is set to: 192.168.4.220
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> USE_CNI is set to: false
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> --------------------------------------------
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> Killing all kubernetes containers...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:36<span style="color:#f92672">]</span> Launching docker bootstrap...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 14:59:37<span style="color:#f92672">]</span> Launching etcd...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:01:46<span style="color:#f92672">]</span> Launching flannel...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;action&#34;</span>:<span style="color:#e6db74">&#34;set&#34;</span>,<span style="color:#e6db74">&#34;node&#34;</span>:<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;key&#34;</span>:<span style="color:#e6db74">&#34;/coreos.com/network/config&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;{ \&#34;Network\&#34;: \&#34;10.1.0.0/16\&#34;, \&#34;Backend\&#34;: {\&#34;Type\&#34;: \&#34;udp\&#34;}}&#34;</span>,<span style="color:#e6db74">&#34;modifiedIndex&#34;</span>:4,<span style="color:#e6db74">&#34;createdIndex&#34;</span>:4<span style="color:#f92672">}}</span>
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:05:34<span style="color:#f92672">]</span> FLANNEL_SUBNET is set to: 10.1.84.1/24
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:05:34<span style="color:#f92672">]</span> FLANNEL_MTU is set to: <span style="color:#ae81ff">1472</span>
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:05:34<span style="color:#f92672">]</span> Restarting main docker daemon...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:05:36<span style="color:#f92672">]</span> Restarted docker with the new flannel settings
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:05:36<span style="color:#f92672">]</span> Launching Kubernetes master components...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:16:49<span style="color:#f92672">]</span> Done. It may take about a minute before apiserver is up.
+</span></span></code></pre></div><p>在此过程中会下载如下镜像,如果不能自动拉取,在安装前安装好镜像应该也是可以的.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcr.io/google_containers/hyperkube-amd64
+</span></span><span style="display:flex;"><span>gcr.io/google_containers/pause-amd64
+</span></span><span style="display:flex;"><span>gcr.io/google_containers/etcd-amd64
+</span></span><span style="display:flex;"><span>gcr.io/google_containers/flannel-amd64
+</span></span></code></pre></div><h3 id="worker-部署">worker 部署</h3>
+<p>在 worker 主机上执行如下命令:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git clone https://github.com/kubernetes/kube-deploy
+</span></span><span style="display:flex;"><span>$ cd kube-deploy/docker-multinode
+</span></span><span style="display:flex;"><span>$ export MASTER_IP<span style="color:#f92672">=</span>192.168.4.220
+</span></span><span style="display:flex;"><span>$ ./worker.sh
+</span></span></code></pre></div><p>输出如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> K8S_VERSION is set to: v1.3.5
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> ETCD_VERSION is set to: 2.2.5
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> FLANNEL_VERSION is set to: 0.5.5
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> FLANNEL_IPMASQ is set to: true
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> FLANNEL_NETWORK is set to: 10.1.0.0/16
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> FLANNEL_BACKEND is set to: udp
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> RESTART_POLICY is set to: unless-stopped
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> MASTER_IP is set to: 192.168.4.220
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> ARCH is set to: amd64
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> IP_ADDRESS is set to: 192.168.4.219
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> USE_CNI is set to: false
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> --------------------------------------------
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> Killing all kubernetes containers...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:51<span style="color:#f92672">]</span> Launching docker bootstrap...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:50:52<span style="color:#f92672">]</span> Launching flannel...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:54:08<span style="color:#f92672">]</span> FLANNEL_SUBNET is set to: 10.1.13.1/24
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:54:08<span style="color:#f92672">]</span> FLANNEL_MTU is set to: <span style="color:#ae81ff">1472</span>
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:54:08<span style="color:#f92672">]</span> Restarting main docker daemon...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:54:10<span style="color:#f92672">]</span> Restarted docker with the new flannel settings
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 15:54:10<span style="color:#f92672">]</span> Launching Kubernetes worker components...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 16:01:24<span style="color:#f92672">]</span> Launching kube-proxy...
+</span></span><span style="display:flex;"><span>+++ <span style="color:#f92672">[</span><span style="color:#ae81ff">0812</span> 16:01:24<span style="color:#f92672">]</span> Done. After about a minute the node should be ready.
+</span></span></code></pre></div><p>在此过程中会下载如下镜像,如果不能自动拉取,在安装前安装好镜像应该也是可以的.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcr.io/google_containers/hyperkube-amd64
+</span></span><span style="display:flex;"><span>gcr.io/google_containers/flannel-amd64
+</span></span></code></pre></div><h3 id="dashboard访问">dashboard访问</h3>
+<p>由于部署了 k8s 的 dashboard, 因此可以直接访问 dashboard 查看到页面:
+<code>http://192.168.4.220:8080/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#/workload</code></p>
+<h3 id="kubectl-下载安装">kubectl 下载安装</h3>
+<p>从 kubernetes 发行 release 中可以找到对应的 kubectl 可执行文件.将其放置到 master 中.</p>
+<p>执行 <code>kubectl version</code>
+输出如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@1604:~/kube-deploy/docker-multinode# kubectl version
+</span></span><span style="display:flex;"><span>Client Version: version.Info<span style="color:#f92672">{</span>Major:<span style="color:#e6db74">&#34;1&#34;</span>, Minor:<span style="color:#e6db74">&#34;3&#34;</span>, GitVersion:<span style="color:#e6db74">&#34;v1.3.4&#34;</span>, GitCommit:<span style="color:#e6db74">&#34;dd6b458ef8dbf24aff55795baa68f83383c9b3a9&#34;</span>, GitTreeState:<span style="color:#e6db74">&#34;clean&#34;</span>, BuildDate:<span style="color:#e6db74">&#34;2016-08-01T16:45:16Z&#34;</span>, GoVersion:<span style="color:#e6db74">&#34;go1.6.2&#34;</span>, Compiler:<span style="color:#e6db74">&#34;gc&#34;</span>, Platform:<span style="color:#e6db74">&#34;linux/amd64&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>Server Version: version.Info<span style="color:#f92672">{</span>Major:<span style="color:#e6db74">&#34;1&#34;</span>, Minor:<span style="color:#e6db74">&#34;3&#34;</span>, GitVersion:<span style="color:#e6db74">&#34;v1.3.5&#34;</span>, GitCommit:<span style="color:#e6db74">&#34;b0deb2eb8f4037421077f77cb163dbb4c0a2a9f5&#34;</span>, GitTreeState:<span style="color:#e6db74">&#34;clean&#34;</span>, BuildDate:<span style="color:#e6db74">&#34;2016-08-11T20:21:58Z&#34;</span>, GoVersion:<span style="color:#e6db74">&#34;go1.6.2&#34;</span>, Compiler:<span style="color:#e6db74">&#34;gc&#34;</span>, Platform:<span style="color:#e6db74">&#34;linux/amd64&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>可以查看到正确的 server 信息.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

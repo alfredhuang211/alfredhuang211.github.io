@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>docker跨主机macvlan网络配置 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="docker跨主机macvlan网络配置" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAmacvlan%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="docker跨主机macvlan网络配置">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="313">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker跨主机macvlan网络配置"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">docker跨主机macvlan网络配置</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="docker跨主机macvlan网络配置">docker跨主机macvlan网络配置</h1>
+<h2 id="搭建环境">搭建环境</h2>
+<ul>
+<li>
+<p>virtualbox, ubuntu14.04.4 内核4.2.0 docker 1.12.0-rc1</p>
+</li>
+<li>
+<p>virtualbox上运行两套主机系统,设置使用桥接模式,网卡混杂模式开启全部允许.</p>
+</li>
+<li>
+<p>主机上配置的eth0网口或者创建的vlan网口,均需要开启混杂模式,命令 <code>ip link set eth0 promisc on</code> <code>ip link set eth0.100 promisc on</code></p>
+</li>
+</ul>
+<p><strong>注意</strong> : 如果不开启混杂模式,会导致macvlan网络无法访问外界,具体在不使用vlan时,表现为无法ping通路由,无法ping通同一网络内其他主机</p>
+<h2 id="搭建过程1-不使用vlan">搭建过程1-不使用vlan</h2>
+<h3 id="1-创建docker-macvlan网络">1. 创建docker macvlan网络</h3>
+<p>两台主机上 eth0 使用分别为 192.168.15.75/192.168.15.21. 分别在两台主机上使用相同命令 <code>docker network create -d macvlan --subnet=192.168.15.0/24 --gateway=192.168.15.1 -o parent=eth0 -o macvlan_mode=bridge eth0_1</code> 创建eth0_1的macvlan网络.</p>
+<h3 id="2-创建容器">2. 创建容器</h3>
+<p>主机1 运行容器 使用命令:</p>
+<p><code>docker run --net=eth0_1 --ip=192.168.15.101 -id --name test101 busybox sh</code></p>
+<p><code>docker run --net=eth0_1 --ip=192.168.15.102 -id --name test102 busybox sh</code></p>
+<p>主机2 运行容器 使用命令:</p>
+<p><code>docker run --net=eth0_1 --ip=192.168.15.201 -id --name test201 busybox sh</code></p>
+<p><code>docker run --net=eth0_1 --ip=192.168.15.202 -id --name test202 busybox sh</code></p>
+<h3 id="3-测试网络">3. 测试网络</h3>
+<p>主机1上测试:</p>
+<p>运行命令:</p>
+<p><code>docker exec test101 ping 192.168.15.1</code> ping网关: <strong>通</strong></p>
+<p><code>docker exec test101 ping test102</code> 使用容器名ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test102 ping 192.168.15.101</code> ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test102 ping 192.168.15.199</code> ping本网络其他主机: <strong>通</strong></p>
+<p><code>docker exec test101 ping 192.168.15.201</code> ping另一主机容器: <strong>通</strong></p>
+<p><code>docker exec test101 ping test201</code> 使用容器名ping另一主机容器: <strong>不通</strong></p>
+<p><code>ping 192.168.15.101</code> 本主机ping本主机容器: <strong>不通</strong></p>
+<p><code>ping 192.168.15.201</code> 本主机ping另一主机容器: <strong>通</strong></p>
+<p>主机2上测试获取相同结果.</p>
+<h2 id="搭建过程2-使用vlan">搭建过程2-使用vlan</h2>
+<h3 id="1-创建vlan">1. 创建vlan</h3>
+<p>使用命令<code>vconfig add eth0 100</code> 创建eth0.100的vlan.设置两台主机的vlan ip分别为192.168.100.50/192.168.100.51</p>
+<h3 id="2-创建docker-macvlan网络">2. 创建docker macvlan网络</h3>
+<p>分别在两台主机上使用命令 <code>docker network create -d macvlan --subnet=192.168.100.0/24 --gateway=192.168.100.1 -o parent=eth0.100 -o macvlan_mode=bridge 100_1</code> 创建相同的100_1的macvlan网络.</p>
+<h3 id="3-创建容器">3. 创建容器</h3>
+<p>主机1 运行容器 使用命令:</p>
+<p><code>docker run --net=100_1 --ip=192.168.100.101 -id --name test100.101 busybox sh</code></p>
+<p><code>docker run --net=100_1 --ip=192.168.100.102 -id --name test100.102 busybox sh</code></p>
+<p>主机2 运行容器 使用命令:</p>
+<p><code>docker run --net=100_1 --ip=192.168.100.201 -id --name test100.201 busybox sh</code></p>
+<p><code>docker run --net=100_1 --ip=192.168.100.202 -id --name test100.202 busybox sh</code></p>
+<h3 id="4-测试网络">4. 测试网络</h3>
+<p>主机1上测试:</p>
+<p>运行命令:</p>
+<p><code>docker exec test100.101 ping 192.168.100.1</code> ping网关: <strong>不通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.100.50</code> ping本地eth0.100地址: <strong>不通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.100.51</code> ping另一个主机的eth0.100地址:<strong>通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.100.102</code> ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.100.201</code> ping另一主机容器: <strong>通</strong></p>
+<p><code>docker exec test100.101 ping test100.102</code> 使用容器名ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test100.101 ping test100.201</code> 使用容器名ping另一主机容器: <strong>不通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.15.199</code> ping跨网络主机: <strong>不通</strong></p>
+<p><code>ping 192.168.100.101</code> 本主机ping本主机容器: <strong>不通</strong></p>
+<p><code>ping 192.168.100.201</code> 本主机ping另一主机容器: <strong>通</strong></p>
+<p>主机2测试相同</p>
+<h2 id="一些问题">一些问题</h2>
+<p>macvlan网络在创建时要指定parent.其中parent仅能使用一次,即eth0在创建一个macvlan网络时使用了,则在创建另一个的时候就无法再使用了.</p>
+<p>在创建macvlan的时候,如果不指定网段,默认网段为172.18.0.0/16, 此时加入此网络的容器,在同一台主机上时可以互相ping通,无法ping通外部网络,同时加入此网络的容器,创建时不能手工指定ip,仅能使用ipam自动分配.</p>
+<p><strong>在使用和主机相同网段的macvlan时,如果在创建容器时不指定ip,则默认ipam从192.168.15.2开始分配,不检查网段内是否已有相同ip,这种情况下会造成容器ip和网络内其他设备ip冲突.具体情况可看如下:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>root@ubuntu:~# arp -a 192.168.15.5
+</span></span><span style="display:flex;"><span>bogon <span style="color:#f92672">(</span>192.168.15.5<span style="color:#f92672">)</span> at 00:17:61:12:0b:d1 <span style="color:#f92672">[</span>ether<span style="color:#f92672">]</span> on eth0
+</span></span><span style="display:flex;"><span>root@ubuntu:~#
+</span></span><span style="display:flex;"><span>root@ubuntu:~#
+</span></span><span style="display:flex;"><span>root@ubuntu:~# arp -a 192.168.15.5
+</span></span><span style="display:flex;"><span>bogon <span style="color:#f92672">(</span>192.168.15.5<span style="color:#f92672">)</span> at 02:42:c0:a8:0f:05 <span style="color:#f92672">[</span>ether<span style="color:#f92672">]</span> on eth0
+</span></span></code></pre></div><p>如上是在创建的容器对网关ping之前和ping之后查看的arp,可以看到发生了ip冲突</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

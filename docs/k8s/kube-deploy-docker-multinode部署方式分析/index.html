@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>kube-deploy docker multinode部署方式分析 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="kube-deploy docker multinode部署方式分析" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/kube-deploy-docker-multinode%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E5%88%86%E6%9E%90/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="kube-deploy docker multinode部署方式分析">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="374">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kube-deploy docker multinode部署方式分析"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">kube-deploy docker multinode部署方式分析</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="kube-deploy-docker-multinode部署方式分析">kube-deploy docker multinode部署方式分析</h1>
+<p>由于 k8s 使用容器方式部署的方便, 现对 k8s 的 kube-deploy 项目中的 docker 部署方式进行一定的分析.</p>
+<h2 id="master-部署分析">master 部署分析</h2>
+<p>入口为 master.sh, 实际内部仅调用了若干函数. 主要分支为根据 USE_CNI 环境变量的配置, 决定 CNI 启动于否.</p>
+<p>脚本首先设置 MASTER_IP 为 localhost.</p>
+<p>调用 main 函数</p>
+<blockquote>
+<p>docker 检查
+执行权限需要为root
+确定K8S_VERSION为用户定义或最新
+ETCD_VERSION 确定
+FLANNEL_VERSION 及相关版本信息确定
+系统架构: x86, arm&hellip;
+使用的网口: eth0&hellip;
+使用的IP地址
+bootstrap docker 的 sock 地址, 默认 unix:///var/run/docker-bootstrap.sock
+etcd的网络配置: &ndash;net host: 默认是用主机网络
+KUBELET_MOUNTS 挂载参数
+如果使用CNI:</p>
+<blockquote>
+<p>bootstrap 参数修改
+etcd网络配置参数变更为: &ldquo;-p 2379:2379 -p 2380:2380 -p 4001:4001&rdquo;
+CNI 参数配置</p>
+</blockquote>
+</blockquote>
+<p>调用 log_variables 函数</p>
+<blockquote>
+<p>展示各项参数</p>
+</blockquote>
+<p>调用 install_network_utils 函数</p>
+<blockquote>
+<p>根据操作系统(yum 或 apt-get)安装 net-tools 和 bridge-utils 组件.</p>
+</blockquote>
+<p>调用 turndown 函数</p>
+<blockquote>
+<p>检查是否有 bootstrap docker, 如有, 清理里面的容器, 停止相关进程.
+检查是否有 kube_ 或 k8s_ 相关容器, 如有, 清理容器.
+是否清理/var/lib/kubelet, 如清理,卸载可能有的挂载, 删除目录
+如果有 cni0 的 bridge 网口, 停止网口并删除</p>
+</blockquote>
+<p>分支1:使用CNI</p>
+<ul>
+<li>使用CNI, 调用cni的 ensure_docker_settings 函数</li>
+</ul>
+<blockquote>
+<p>确保有 systemctl 命令
+获取 docker 启动配置文件
+清理里面的 mtu 和 bip 参数
+通过增加 shared-mounts.conf 文件设置 docker 配置的 MountFlags=shared
+根据需要重启 docker</p>
+</blockquote>
+<ul>
+<li>使用CNI, 调用 start_etcd 函数</li>
+</ul>
+<blockquote>
+<p>在当前 docker 启动 kube-etcd, 通过映射暴露服务端口,挂载 /var/lib/kubelet/etcd 目录作为数据目录
+循环等待检查服务是否启动完成, 如果超时报错退出
+使用镜像中的 etcdctl 设置 flannel 网络配置</p>
+</blockquote>
+<ul>
+<li>使用CNI, 调用 start_flannel 函数</li>
+</ul>
+<blockquote>
+<p>在当前 docker 启动 kube-flannel, net 为 host, privileged, 映射 /dev/net, FLANNEL_SUBNET_DIR,
+循环等待检查服务是否启动完成
+读取 flannel 子网配置并显示</p>
+</blockquote>
+<p>分支2:不使用CNI</p>
+<ul>
+<li>不使用CNI, 调用 bootstrap_daemon 函数</li>
+</ul>
+<blockquote>
+<p>启动 bootstrap docker, iptables为false, ip-masp为false, 无bridge,
+循环等待检查服务是否启动完成</p>
+</blockquote>
+<ul>
+<li>不使用CNI, 调用 start_etcd 函数</li>
+</ul>
+<blockquote>
+<p>相同, 不过由于配置了 bootstrap docker 参数, 容器会在 bootstrap docker中启动</p>
+</blockquote>
+<ul>
+<li>不使用CNI, 调用 start_flannel 函数</li>
+</ul>
+<blockquote>
+<p>相同, 不过由于配置了 bootstrap docker 参数, 容器会在 bootstrap docker中启动</p>
+</blockquote>
+<ul>
+<li>不使用CNI, 调用 restart_docker 函数</li>
+</ul>
+<blockquote>
+<p>如果有 systemctl 命令, 备份 docker 启动配置文件, 替换 mtu, bip 为 flannel 相关配置, 停止并删除 docker0 的bridge网口, 重启 docker 服务, 此 docker 为主 docker daemon.
+如果有 yum 命令, 备份 /etc/sysconfig/docker, 替换 mtu, bip 为 flannel 相关配置,停止并删除 docker0 的bridge网口, 重启 docker 服务.
+如果有 apt-get 命令, 备份 /etc/default/docker, 替换 mtu, bip 为 flannel 相关配置,停止并删除 docker0 的bridge网口, 重启 docker 服务.</p>
+</blockquote>
+<p>分支完结,启动kubelet</p>
+<p>调用 start_k8s_master 函数</p>
+<blockquote>
+<p>准备 shared_kubelet_dir: 创建/var/lib/kubelet, mount &ndash;bind, mount &ndash;make-shared
+启动 kube_kubelet 容器, 镜像为hyperkube, net使用host, pid使用host, privileged, 命令为/hyperkube kubelet, 参数包括 allow-privileged, api-server设置为http://localhost:8080, cluster-dns 和 cluster-domain 设置, hostname-override 为当前ip, config 为 /etc/kubernetes/manifests-multi</p>
+</blockquote>
+<p>至此, master.sh 脚本执行完成, master 节点启动完成.</p>
+<h2 id="worker-部署分析">worker 部署分析</h2>
+<p>入口为 worker.sh, 实际内部仅调用了若干函数. 主要分支为根据 USE_CNI 环境变量的配置, 决定 CNI 启动于否.</p>
+<p>在函数运行前, 检查 MASTER_IP 是否设置.</p>
+<p>函数执行与 master.sh 相同, 仅在执行完 CNI 分支后, 执行的时 start_k8s_worker 和 start_k8s_worker_proxy 函数</p>
+<p>调用 start_k8s_worker 函数</p>
+<blockquote>
+<p>准备 shared_kubelet_dir: 创建/var/lib/kubelet, mount &ndash;bind, mount &ndash;make-shared
+启动 kube_kubelet 容器, 镜像为hyperkube, net使用host, pid使用host, privileged, 命令为/hyperkube kubelet, 参数包括 allow-privileged, api-server设置为http://${MASTER_IP}:8080, cluster-dns 和 cluster-domain 设置, hostname-override 为当前ip.无config.</p>
+</blockquote>
+<p>调用 start_k8s_worker_proxy 函数</p>
+<blockquote>
+<p>启动 kube_proxy 容器, 镜像为hyperkube, net使用host, privileged, 命令为hyperkube proxy, 参数包括 &ndash;master=http://${MASTER_IP}:8080</p>
+</blockquote>
+<p>至此, worker.sh 脚本执行完成, worker 节点启动完成.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

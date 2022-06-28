@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>kubernetes 非容器方式多节点部署 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="kubernetes 非容器方式多节点部署" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/kubernetes-%E9%9D%9E%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E5%A4%9A%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="kubernetes 非容器方式多节点部署">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="303">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes 非容器方式多节点部署"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">kubernetes 非容器方式多节点部署</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="kubernetes-非容器方式多节点部署">kubernetes 非容器方式多节点部署</h1>
+<p>标签： kubernetes k8s 部署 ubuntu docker</p>
+<hr>
+<h2 id="部署环境">部署环境:</h2>
+<p>操作系统: ubuntu 14.04.4 (ubuntu 15+ 由于 systemd 的使用, 在20160813日期时还未支持)
+docker: 使用的是 1.11.2 版本, 官方文档指明仅需1.2+即可.
+bridge-utils: 使用 apt-get install bridge-utils 安装.
+hosts: 将 <code>220.255.2.153 storage.googleapis.com</code> 添加到 <code>/etc/hosts</code> 避免国内环境导致的下载失败.</p>
+<p>实际操作主机:
+192.168.4.218 192.168.4.217 两台主机, 其中 218 部署为 master+worker, 217 部署为 worker.</p>
+<h2 id="部署步骤">部署步骤</h2>
+<h3 id="代码库下载">代码库下载</h3>
+<blockquote>
+<p>git clone &ndash;depth 1 <a href="https://github.com/kubernetes/kubernetes.git">https://github.com/kubernetes/kubernetes.git</a></p>
+</blockquote>
+<h3 id="集群配置">集群配置</h3>
+<ol>
+<li>确定etcd, flannel, kubernetes的版本, 如果均不输入, kubernetes 默认为最新 release, etcd 默认为 2.3.1, flannel 默认为 0.5.5</li>
+</ol>
+<blockquote>
+<p>export KUBE_VERSION=1.2.0
+export FLANNEL_VERSION=0.5.0
+export ETCD_VERSION=2.2.0</p>
+</blockquote>
+<ol start="2">
+<li>确定集群配置</li>
+</ol>
+<blockquote>
+<p>export nodes=&ldquo;<a href="mailto:root@192.168.4.218">root@192.168.4.218</a> <a href="mailto:root@192.168.4.217">root@192.168.4.217</a>&rdquo;
+export role=&ldquo;ai i&rdquo;
+export NUM_NODES=${NUM_NODES:-2}
+export SERVICE_CLUSTER_IP_RANGE=10.0.1.0/24
+export FLANNEL_NET=172.16.0.0/16
+其中 role中 ai 表示部署 master 和 worker, i 表示部署 worker.
+如果节点更多, 可以根据实际情况修改 nodes 和 role.</p>
+</blockquote>
+<ol start="3">
+<li>确定使用 ubuntu 为 KUBERNETES_PROVIDER</li>
+</ol>
+<blockquote>
+<p>export KUBERNETES_PROVIDER=ubuntu
+此处如果非 ubuntu 系统,可以替换为实际使用的系统.</p>
+</blockquote>
+<ol start="4">
+<li>执行部署</li>
+</ol>
+<blockquote>
+<p>./kube-up.sh</p>
+</blockquote>
+<h3 id="集群验证">集群验证</h3>
+<p>执行如下命令确认 kubernetes 已经正常启动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl version
+</span></span><span style="display:flex;"><span>Client Version: version.Info<span style="color:#f92672">{</span>Major:<span style="color:#e6db74">&#34;1&#34;</span>, Minor:<span style="color:#e6db74">&#34;3&#34;</span>, GitVersion:<span style="color:#e6db74">&#34;v1.3.4&#34;</span>, GitCommit:<span style="color:#e6db74">&#34;dd6b458ef8dbf24aff55795baa68f83383c9b3a9&#34;</span>, GitTreeState:<span style="color:#e6db74">&#34;clean&#34;</span>, BuildDate:<span style="color:#e6db74">&#34;2016-08-01T16:45:16Z&#34;</span>, GoVersion:<span style="color:#e6db74">&#34;go1.6.2&#34;</span>, Compiler:<span style="color:#e6db74">&#34;gc&#34;</span>, Platform:<span style="color:#e6db74">&#34;linux/amd64&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>Server Version: version.Info<span style="color:#f92672">{</span>Major:<span style="color:#e6db74">&#34;1&#34;</span>, Minor:<span style="color:#e6db74">&#34;3&#34;</span>, GitVersion:<span style="color:#e6db74">&#34;v1.3.4&#34;</span>, GitCommit:<span style="color:#e6db74">&#34;dd6b458ef8dbf24aff55795baa68f83383c9b3a9&#34;</span>, GitTreeState:<span style="color:#e6db74">&#34;clean&#34;</span>, BuildDate:<span style="color:#e6db74">&#34;2016-08-01T16:38:31Z&#34;</span>, GoVersion:<span style="color:#e6db74">&#34;go1.6.2&#34;</span>, Compiler:<span style="color:#e6db74">&#34;gc&#34;</span>, Platform:<span style="color:#e6db74">&#34;linux/amd64&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="dashboard-安装">dashboard 安装</h3>
+<p>通过如下命令可以完成 dashboard 的安装:
+<code>kubectl create -f https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml</code></p>
+<p>界面输出为:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>deployment <span style="color:#e6db74">&#34;kubernetes-dashboard&#34;</span> created
+</span></span><span style="display:flex;"><span>You have exposed your service on an external port on all nodes in your
+</span></span><span style="display:flex;"><span>cluster.  If you want to expose this service to the external internet, you may
+</span></span><span style="display:flex;"><span>need to set up firewall rules <span style="color:#66d9ef">for</span> the service port<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>tcp:32628<span style="color:#f92672">)</span> to serve traffic.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>See http://releases.k8s.io/release-1.3/docs/user-guide/services-firewalls.md <span style="color:#66d9ef">for</span> more details.
+</span></span><span style="display:flex;"><span>service <span style="color:#e6db74">&#34;kubernetes-dashboard&#34;</span> created
+</span></span></code></pre></div><p>此时可以通过 kubectl 命令查看部署情况:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@ubuntu:~# kubectl get deployments --namespace<span style="color:#f92672">=</span>kube-system
+</span></span><span style="display:flex;"><span>NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+</span></span><span style="display:flex;"><span>kubernetes-dashboard   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           7m
+</span></span><span style="display:flex;"><span>root@ubuntu:~# kubectl get po --namespace<span style="color:#f92672">=</span>kube-system
+</span></span><span style="display:flex;"><span>NAME                                    READY     STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>kubernetes-dashboard-3825951078-c2w0i   1/1       Running   <span style="color:#ae81ff">0</span>          7m
+</span></span><span style="display:flex;"><span>root@ubuntu:~# kubectl get rs --namespace<span style="color:#f92672">=</span>kube-system
+</span></span><span style="display:flex;"><span>NAME                              DESIRED   CURRENT   AGE
+</span></span><span style="display:flex;"><span>kubernetes-dashboard-3825951078   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         8m
+</span></span></code></pre></div><p>dashboard 默认部署到 namespace 为 kube-system 下.</p>
+<p>此时可以通过 <code>http://{IP}:8080/ui</code> 访问dashboard, 链接会默认跳转到 <code>http://192.168.4.218:8080/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#/workload</code>, 如果 dashboard 未安装或安装失败, 此页面会报响应错误.</p>
+<h3 id="说明">说明</h3>
+<p>在 kube-up.sh 执行过程中, 会有多次要求输入 master 主机和 worker 主机密码的过程. 可以通过配置 ssh 免密码登录来避免多次输入密码.</p>
+<blockquote>
+<p>在主机上使用 ssh-keygen 生成 public-key, 默认位置为 ~/.ssh/id_rsa.pub
+将其中内容复制到 master 主机上的 ~/.ssh/authorized_keys 内</p>
+</blockquote>
+<p>在 kube-up.sh 执行过程中, 会根据模块版本号, 下载 etcd, flanner, kubernetes 的 release 包.在网速较慢或已经自行下载了模块版本的情况下,可以通过修改 cluser/ubuntu/download-release.sh, 避免重复下载.</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

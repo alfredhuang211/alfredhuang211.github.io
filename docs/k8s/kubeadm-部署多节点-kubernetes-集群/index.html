@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>kubeadm 进行多节点kubernetes 集群搭建 | 个人学习记录</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.101.0" />
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="kubeadm 进行多节点kubernetes 集群搭建" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://alfredhuang211.github.io/k8s/kubeadm-%E9%83%A8%E7%BD%B2%E5%A4%9A%E8%8A%82%E7%82%B9-kubernetes-%E9%9B%86%E7%BE%A4/" /><meta property="article:section" content="k8s" />
+<meta property="article:published_time" content="2022-06-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-06-27T00:00:00+00:00" />
+
+<meta itemprop="name" content="kubeadm 进行多节点kubernetes 集群搭建">
+<meta itemprop="description" content=""><meta itemprop="datePublished" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-06-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="221">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubeadm 进行多节点kubernetes 集群搭建"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        个人学习记录
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/" title="Home page">
+              Home
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
+              Hugo
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/web3" title="Web 3.0 page">
+              Web 3.0
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/k8s" title="Kubernetes page">
+              Kubernetes
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/serverless" title="Serverless page">
+              Serverless
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white no-underline white-90" href="/about" title="About page">
+              About
+            </a>
+          </li>
+          
+        </ul>
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">kubeadm 进行多节点kubernetes 集群搭建</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2022-06-27T00:00:00Z">June 27, 2022</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-solid serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="kubeadm-进行多节点kubernetes-集群搭建">kubeadm 进行多节点kubernetes 集群搭建</h1>
+<p>标签： kubernetes k8s 容器 安装部署 kubeadm</p>
+<hr>
+<h2 id="部署环境">部署环境</h2>
+<p>系统环境: ubuntu 16.04, docker 1.12</p>
+<p>设备准备: 三台设备, 分别为192.168.4.250/251/252, 其中 250 部署为 master, 另外两台部署为 node. 三台主机需求修改为不同 hostname 避免冲突.</p>
+<p>环境准备: 修改hosts, 确保能够正常从 gcr.io 上完成镜像下载.</p>
+<h2 id="初始准备">初始准备</h2>
+<p>在每台设备上均完成 kubelet, kubernetes-cni, kubeadm, kubectl 的安装.</p>
+<ol>
+<li>增加 apt-key 证书:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+</span></span></code></pre></div><ol start="2">
+<li>增加相关源到apt中:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/apt/sources.list.d/kubernetes.list
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">deb http://apt.kubernetes.io/ kubernetes-xenial main
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><ol start="3">
+<li>更新源并安装相关组件:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>apt-get update
+</span></span><span style="display:flex;"><span>apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+</span></span></code></pre></div><h2 id="master-部署">master 部署</h2>
+<p>由于计划使用 flannel 网络, 所以 kubeadm 的 init 命令需要带有参数 pod-network-cidr.</p>
+<p>通过执行如下命令完成 master 的启动:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubeadm init --pod-network-cidr<span style="color:#f92672">=</span>10.244.0.0/16
+</span></span></code></pre></div><p>命令会自行完成主机依赖检查, 使用的镜像下载和 pod 启动.</p>
+<p>最终输出中会有 <code>kubeadm join --token=4fd077.9d8e3b90523c5e3f 192.168.3.250</code> 类似字段, 用于在 node 上执行以便加入主机到集群中.</p>
+<h2 id="flannel-网络安装">flannel 网络安装</h2>
+<p>由于 flannel 现在也和 cni 进行了对接, 因此可以直接以 daemonset 的方式启动. 通过执行如下命令完成 flannel 网络组件的安装和启动.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f  https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+</span></span></code></pre></div><p>此方式将自动使用 <code>https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</code> 此位置保存的 yaml 文件来完成 configmap 和 daemonset 的创建.</p>
+<h2 id="node-部署">node 部署</h2>
+<p>利用 master 部署最终生成的命令,在 node 上执行:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubeadm join --token<span style="color:#f92672">=</span>4fd077.9d8e3b90523c5e3f 192.168.3.250
+</span></span></code></pre></div><p>命令同样会自行完成主机依赖检查, 相关配置生成, 使得主机上的 kubelet 能正确加入到 master 所管理的集群中去.</p>
+<p>同时由于 flannel 和 kube-proxy 都是以 daemonset 的形式启动, 会在 node 加入集群后自动完成节点上 flannel 和 kube-proxy 的启动.</p>
+<h2 id="检查集群状态">检查集群状态</h2>
+<p>最终通过 master 上 kubectl 相关命令完成集群情况的检查:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># kubectl version</span>
+</span></span><span style="display:flex;"><span>Client Version: version.Info<span style="color:#f92672">{</span>Major:<span style="color:#e6db74">&#34;1&#34;</span>, Minor:<span style="color:#e6db74">&#34;5&#34;</span>, GitVersion:<span style="color:#e6db74">&#34;v1.5.1&#34;</span>, GitCommit:<span style="color:#e6db74">&#34;82450d03cb057bab0950214ef122b67c83fb11df&#34;</span>, GitTreeState:<span style="color:#e6db74">&#34;clean&#34;</span>, BuildDate:<span style="color:#e6db74">&#34;2016-12-14T00:57:05Z&#34;</span>, GoVersion:<span style="color:#e6db74">&#34;go1.7.4&#34;</span>, Compiler:<span style="color:#e6db74">&#34;gc&#34;</span>, Platform:<span style="color:#e6db74">&#34;linux/amd64&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>Server Version: version.Info<span style="color:#f92672">{</span>Major:<span style="color:#e6db74">&#34;1&#34;</span>, Minor:<span style="color:#e6db74">&#34;5&#34;</span>, GitVersion:<span style="color:#e6db74">&#34;v1.5.1&#34;</span>, GitCommit:<span style="color:#e6db74">&#34;82450d03cb057bab0950214ef122b67c83fb11df&#34;</span>, GitTreeState:<span style="color:#e6db74">&#34;clean&#34;</span>, BuildDate:<span style="color:#e6db74">&#34;2016-12-14T00:52:01Z&#34;</span>, GoVersion:<span style="color:#e6db74">&#34;go1.7.4&#34;</span>, Compiler:<span style="color:#e6db74">&#34;gc&#34;</span>, Platform:<span style="color:#e6db74">&#34;linux/amd64&#34;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># kubectl get node</span>
+</span></span><span style="display:flex;"><span>NAME       STATUS         AGE
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1604</span>       Ready,master   1d
+</span></span><span style="display:flex;"><span>1604.251   Ready          1d
+</span></span><span style="display:flex;"><span>1604.252   Ready          1d
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kubectl get cs
+</span></span><span style="display:flex;"><span>NAME                 STATUS    MESSAGE              ERROR
+</span></span><span style="display:flex;"><span>scheduler            Healthy   ok                   
+</span></span><span style="display:flex;"><span>controller-manager   Healthy   ok                   
+</span></span><span style="display:flex;"><span>etcd-0               Healthy   <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;health&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">}</span>   
+</span></span></code></pre></div><ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://alfredhuang211.github.io/" >
+    &copy;  个人学习记录 2022 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>
