@@ -23,9 +23,9 @@ theme = "gohugo-theme-ananke"
         url = "/"
         weight = 1
     [[menu.main]]
-        identifier = 'hugo'
-        name = "Hugo"
-        url = "/hugo"
+        identifier = 'docs'
+        name = "文档应用"
+        url = "/docs"
         weight = 2
     [[menu.main]]
         identifier = 'web3'

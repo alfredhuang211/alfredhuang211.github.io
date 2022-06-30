@@ -22,12 +22,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/hugo/</loc>
+    <loc>https://alfredhuang211.github.io/docs/</loc>
     <lastmod>2022-06-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/hugo/hugo-%E6%94%AF%E6%8C%81-mindmap/</loc>
+    <loc>https://alfredhuang211.github.io/docs/hugo-%E6%94%AF%E6%8C%81-mindmap/</loc>
     <lastmod>2022-06-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -122,7 +122,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/hugo/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</loc>
+    <loc>https://alfredhuang211.github.io/docs/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</loc>
     <lastmod>2022-06-27T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

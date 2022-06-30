@@ -84,8 +84,8 @@
           </li>
           
           <li class="list f5 f4-ns fw4 dib pr3">
-            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
-              Hugo
+            <a class="hover-white no-underline white-90" href="/docs" title="文档应用 page">
+              文档应用
             </a>
           </li>
           
@@ -295,7 +295,7 @@
 </span></span></code></pre></div><p>可以看到 231 主机为 manager 节点,其他两个为 worker 节点.在 worker 节点上,无法查看 swarm node 信息.</p>
 <h2 id="通过服务使用集群">通过服务使用集群</h2>
 <p>在231,即 manager 节点上,通过执行如下命令启动一个服务.</p>
-<p><code>docker service create --replicas 3 --name test busybox ping www.baidu.com </code></p>
+<p><code>docker service create --replicas 3 --name test busybox ping www.baidu.com </code></p>
 <p>执行后通过 <code>docker service ls</code> 查看服务情况.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@ubuntu231:~# docker service ls
 </span></span><span style="display:flex;"><span>ID            NAME  REPLICAS  IMAGE    COMMAND

@@ -84,8 +84,8 @@
           </li>
           
           <li class="list f5 f4-ns fw4 dib pr3">
-            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
-              Hugo
+            <a class="hover-white no-underline white-90" href="/docs" title="文档应用 page">
+              文档应用
             </a>
           </li>
           
@@ -227,7 +227,7 @@ CNI 参数配置</p>
 <li>使用CNI, 调用 start_flannel 函数</li>
 </ul>
 <blockquote>
-<p>在当前 docker 启动 kube-flannel, net 为 host, privileged, 映射 /dev/net, FLANNEL_SUBNET_DIR,
+<p>在当前 docker 启动 kube-flannel, net 为 host, privileged, 映射 /dev/net, FLANNEL_SUBNET_DIR, 
 循环等待检查服务是否启动完成
 读取 flannel 子网配置并显示</p>
 </blockquote>
@@ -236,7 +236,7 @@ CNI 参数配置</p>
 <li>不使用CNI, 调用 bootstrap_daemon 函数</li>
 </ul>
 <blockquote>
-<p>启动 bootstrap docker, iptables为false, ip-masp为false, 无bridge,
+<p>启动 bootstrap docker, iptables为false, ip-masp为false, 无bridge, 
 循环等待检查服务是否启动完成</p>
 </blockquote>
 <ul>

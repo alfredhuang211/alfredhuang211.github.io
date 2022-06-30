@@ -84,8 +84,8 @@
           </li>
           
           <li class="list f5 f4-ns fw4 dib pr3">
-            <a class="hover-white no-underline white-90" href="/hugo" title="Hugo page">
-              Hugo
+            <a class="hover-white no-underline white-90" href="/docs" title="文档应用 page">
+              文档应用
             </a>
           </li>
           
@@ -192,7 +192,7 @@
     [zip64 end of central directory record]
     [zip64 end of central directory locator] 
     [end of central directory record]
-</code></pre><p>可以看到，实际的 zip 文件格式基本是<code>[文件头+文件数据+数据描述符]{此处可重复n次}+核心目录+目录结束标识 </code>组成的，压缩文件的文件数据和压缩数据是在文件头部，相关的目录结构，zip文件信息存储在文件尾部。这样的结构，为我们后续 COS 分片上传写入带来了方便，可以先写入压缩数据内容，再写入最终文件信息。</p>
+</code></pre><p>可以看到，实际的 zip 文件格式基本是<code>[文件头+文件数据+数据描述符]{此处可重复n次}+核心目录+目录结束标识 </code>组成的，压缩文件的文件数据和压缩数据是在文件头部，相关的目录结构，zip文件信息存储在文件尾部。这样的结构，为我们后续 COS 分片上传写入带来了方便，可以先写入压缩数据内容，再写入最终文件信息。</p>
 <h2 id="cos-分片上传">COS 分片上传</h2>
 <p>COS 分片上传按照如下操作即可进行：</p>
 <ol>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hugo on 个人学习记录</title>
+    <link>https://alfredhuang211.github.io/docs/</link>
+    <description>Recent content in Hugo on 个人学习记录</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 28 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/docs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>hugo 支持 mindmap</title>
+      <link>https://alfredhuang211.github.io/docs/hugo-%E6%94%AF%E6%8C%81-mindmap/</link>
+      <pubDate>Tue, 28 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/docs/hugo-%E6%94%AF%E6%8C%81-mindmap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>使用hugo构建内容输出的静态站点</title>
+      <link>https://alfredhuang211.github.io/docs/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</link>
+      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/docs/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</guid>
+      <description>当前项目的 hugo 使用总结</description>
+    </item>
+    
+  </channel>
+</rss>
