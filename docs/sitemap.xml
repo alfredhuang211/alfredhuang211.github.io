@@ -3,17 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://alfredhuang211.github.io/</loc>
-    <lastmod>2022-06-28T00:00:00+00:00</lastmod>
+    <lastmod>2022-10-08T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/k8s/</loc>
-    <lastmod>2022-06-28T00:00:00+00:00</lastmod>
+    <loc>https://alfredhuang211.github.io/web3/</loc>
+    <lastmod>2022-10-08T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/serverless/</loc>
-    <lastmod>2022-06-28T00:00:00+00:00</lastmod>
+    <loc>https://alfredhuang211.github.io/web3/%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D/</loc>
+    <lastmod>2022-10-08T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -22,17 +22,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/docs/</loc>
-    <lastmod>2022-06-28T00:00:00+00:00</lastmod>
+    <loc>https://alfredhuang211.github.io/hugo/</loc>
+    <lastmod>2022-10-08T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/docs/hugo-%E6%94%AF%E6%8C%81-mindmap/</loc>
-    <lastmod>2022-06-28T00:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://alfredhuang211.github.io/web3/</loc>
+    <loc>https://alfredhuang211.github.io/hugo/hugo-%E6%94%AF%E6%8C%81-mindmap/</loc>
     <lastmod>2022-06-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -63,6 +58,11 @@
     <priority>0.5</priority>
   </url><url>
     <loc>https://alfredhuang211.github.io/k8s/docker%E8%B7%A8%E4%B8%BB%E6%9C%BAoverlay%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</loc>
+    <lastmod>2022-06-27T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://alfredhuang211.github.io/k8s/</loc>
     <lastmod>2022-06-27T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -112,7 +112,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/web3/%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D/</loc>
+    <loc>https://alfredhuang211.github.io/serverless/</loc>
     <lastmod>2022-06-27T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -122,8 +122,8 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://alfredhuang211.github.io/docs/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</loc>
-    <lastmod>2022-06-27T00:00:00+00:00</lastmod>
+    <loc>https://alfredhuang211.github.io/hugo/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</loc>
+    <lastmod>2022-10-08T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>

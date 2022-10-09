@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>个人学习记录</title>
+    <title>k8s on 个人学习记录</title>
     <link>https://alfredhuang211.github.io/k8s/</link>
-    <description>Recent content on 个人学习记录</description>
+    <description>Recent content in k8s on 个人学习记录</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 28 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/k8s/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 27 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/k8s/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>calico 安装及配置实现docker跨主机网络</title>
       <link>https://alfredhuang211.github.io/k8s/calico-%E5%AE%89%E8%A3%85%E5%8F%8A%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0docker%E8%B7%A8%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C/</link>

@@ -6,13 +6,22 @@
     <description>Recent content on 个人学习记录</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 28 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 08 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>web3 入门</title>
+      <link>https://alfredhuang211.github.io/web3/%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D/</link>
+      <pubDate>Sat, 08 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://alfredhuang211.github.io/web3/%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>hugo 支持 mindmap</title>
-      <link>https://alfredhuang211.github.io/docs/hugo-%E6%94%AF%E6%8C%81-mindmap/</link>
+      <link>https://alfredhuang211.github.io/hugo/hugo-%E6%94%AF%E6%8C%81-mindmap/</link>
       <pubDate>Tue, 28 Jun 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://alfredhuang211.github.io/docs/hugo-%E6%94%AF%E6%8C%81-mindmap/</guid>
+      <guid>https://alfredhuang211.github.io/hugo/hugo-%E6%94%AF%E6%8C%81-mindmap/</guid>
       <description></description>
     </item>
     
@@ -152,15 +161,6 @@
     </item>
     
     <item>
-      <title>web3 入门</title>
-      <link>https://alfredhuang211.github.io/web3/%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D/</link>
-      <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://alfredhuang211.github.io/web3/%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>使用 Serverless 进行 AI 预测推理</title>
       <link>https://alfredhuang211.github.io/serverless/%E4%BD%BF%E7%94%A8serverless%E8%BF%9B%E8%A1%8Cai%E6%8E%A8%E7%90%86/</link>
       <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
@@ -171,10 +171,10 @@
     
     <item>
       <title>使用hugo构建内容输出的静态站点</title>
-      <link>https://alfredhuang211.github.io/docs/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</link>
+      <link>https://alfredhuang211.github.io/hugo/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</link>
       <pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://alfredhuang211.github.io/docs/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</guid>
+      <guid>https://alfredhuang211.github.io/hugo/hugo%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</guid>
       <description>当前项目的 hugo 使用总结</description>
     </item>
     

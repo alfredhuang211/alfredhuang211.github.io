@@ -8,8 +8,8 @@ publishDir = "docs"  # output to docs dir for github pages
 theme = "gohugo-theme-ananke"
 
 [params]
-    recent_posts_number = 3
-    date_format = ":date_long"
+    recent_posts_number = 5
+    #date_format = ":date_long"
 
 [sitemap]
   changefreq = "monthly"
@@ -23,9 +23,9 @@ theme = "gohugo-theme-ananke"
         url = "/"
         weight = 1
     [[menu.main]]
-        identifier = 'docs'
-        name = "文档应用"
-        url = "/docs"
+        identifier = 'hugo'
+        name = "Hugo"
+        url = "/hugo"
         weight = 2
     [[menu.main]]
         identifier = 'web3'
