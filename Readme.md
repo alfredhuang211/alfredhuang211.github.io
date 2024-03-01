@@ -5,7 +5,7 @@
 项目使用：
 
 * hugo extend
-* hugo-theme-techdoc
+* theme Mainroad
 
 
 ## 自带hugo

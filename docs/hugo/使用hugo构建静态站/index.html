@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>使用hugo构建静态站点 - Alfredhuang的个人记录</title>
+	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
+	<meta name="description" content="">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="dns-prefetch" href="//fonts.googleapis.com">
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700">
+
+	<link rel="stylesheet" href="/css/style.css">
+	
+
+	<link rel="shortcut icon" href="/favicon.ico">
+		
+</head>
+<body class="body">
+	<div class="container container--outer">
+		<header class="header">
+	<div class="container header__container">
+		
+	<div class="logo">
+		<a class="logo__link" href="/" title="Alfredhuang的个人记录" rel="home">
+			<div class="logo__item logo__text">
+					<div class="logo__title">Alfredhuang的个人记录</div>
+					
+				</div>
+		</a>
+	</div>
+		
+<nav class="menu">
+	<button class="menu__btn" aria-haspopup="true" aria-expanded="false" tabindex="0">
+		<span class="menu__btn-title" tabindex="-1">Menu</span>
+	</button>
+	<ul class="menu__list">
+		<li class="menu__item">
+			<a class="menu__link" href="/">
+				
+				<span class="menu__text">Home</span>
+				
+			</a>
+		</li>
+		<li class="menu__item">
+			<a class="menu__link" href="/about">
+				
+				<span class="menu__text">About</span>
+				
+			</a>
+		</li>
+	</ul>
+</nav>
+
+	</div>
+</header>
+		<div class="wrapper flex">
+			<div class="primary">
+			
+<main class="main" role="main">
+	<article class="post">
+		<header class="post__header">
+			<h1 class="post__title">使用hugo构建静态站点</h1>
+			
+		</header>
+		
+<div class="post__toc toc">
+	<div class="toc__title">Page content</div>
+	<div class="toc__menu">
+		<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#hugo-安装">hugo 安装</a></li>
+        <li><a href="#hugo-打包项目">hugo 打包项目</a></li>
+        <li><a href="#hugo-or-hugo-extend">hugo or hugo-extend</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用技巧">使用技巧</a>
+      <ul>
+        <li><a href="#_indexmd">_index.md</a></li>
+        <li><a href="#文件头">文件头</a></li>
+        <li><a href="#主题">主题</a></li>
+        <li><a href="#目录结构">目录结构</a></li>
+      </ul>
+    </li>
+    <li><a href="#待解决-todolist">待解决 TODOList</a>
+      <ul>
+        <li><a href="#首页最近文档">首页最近文档</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+	</div>
+</div><div class="content post__content clearfix">
+			<h1 id="使用hugo构建静态站点">使用hugo构建静态站点</h1>
+<h3 id="hugo-安装">hugo 安装</h3>
+<p>在 mac 中使用 brew 安装即可；</p>
+<p>在 windows 中可以使用 chocolatery 来安装 hugo 和 hugo extend；</p>
+<p>也可以直接在 hugo 项目 release中下载二进制包直接使用；</p>
+<h3 id="hugo-打包项目">hugo 打包项目</h3>
+<p>在项目下使用 hugo 命令完成编译打包，输出内容进行静态部署就可以了；</p>
+<p>通过在 config.toml 中增加 publishDir = &ldquo;docs&rdquo; 指定输出到 docs 目录中，github pages 配置识别 docs 目录；如果不指定的情况下，默认输出到 public 目录；配置需注意引号；</p>
+<h3 id="hugo-or-hugo-extend">hugo or hugo-extend</h3>
+<p>hugo-extend额外支持了SASS/SCSS，这个能力是有些主题所依赖的，目前可以在没有特殊情况时，均使用extend里面的可执行文件hugo命令来执行。</p>
+<h2 id="使用技巧">使用技巧</h2>
+<h3 id="_indexmd">_index.md</h3>
+<p>内部需要有基础内容，作为每个目录的默认页</p>
+<h3 id="文件头">文件头</h3>
+<p>文件使用如下格式开头，用于 hugo 识别内容信息</p>
+<pre tabindex="0"><code>---
+title: &#34;使用hugo构建内容输出的静态站点&#34;
+
+date: 2022-06-27  
+lastmod: 2018-12-08T15:26:15Z   # 最近修改
+publishdate: 2018-11-23T15:26:15Z  # 发布时间
+
+summary: &#34;当前项目的 hugo 使用总结&#34;
+
+tags: []
+
+featured_image: &#34;&#34;  #应该是题图
+images:
+    - images/pexels-photo-196666.jpeg #图片？
+
+draft: false  # true or false，告知是否是草稿？是否需要发布？
+
+weight: 20    # 展示权重
+
+TableOfContents: true # 展示ToC
+
+featured_image: &#34;&#34;
+---
+</code></pre><h3 id="主题">主题</h3>
+<p>主题均放在项目根目录的 themes 文件夹下；</p>
+<p>不同主题有不同使用方法，要注意主题的说明文档；</p>
+<h3 id="目录结构">目录结构</h3>
+<p>每个目录下的_index.md，带有的title，可以在后续文章上呈现。</p>
+<h2 id="待解决-todolist">待解决 TODOList</h2>
+<h3 id="首页最近文档">首页最近文档</h3>
+<p>目前始终未对齐最新文档，看起来局限在了某个目录下。</p>
+
+		</div>
+		<footer class="post__footer">
+			
+<div class="post__tags tags clearfix">
+	<svg class="tags__badge icon icon-tag" width="16" height="16" viewBox="0 0 32 32"><path d="M32 19c0 1-1 2-1 2L21 31s-1 1-2 1-2-1-2-1L2 16c-1-1-1.4-2-1.4-2S0 12.5 0 11V3C0 1.5.8.8.8.8S1.5 0 3 0h8c1.5 0 3 .6 3 .6S15 1 16 2l15 15s1 1 1 2zM7 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+	<ul class="tags__list">
+		<li class="tags__item">
+			<a class="tags__link btn" href="/tags/hugo/" rel="tag">hugo</a>
+		</li>
+	</ul>
+</div>
+		</footer>
+	</article>
+</main>
+
+
+
+
+			</div>
+			
+		</div>
+		<footer class="footer">
+	<div class="container footer__container flex">
+		
+		<div class="footer__copyright">
+			&copy; 2024 Alfredhuang的个人记录.
+			<span class="footer__copyright-credits">Generated with <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> and <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad</a> theme.</span>
+		</div>
+	</div>
+</footer>
+	</div>
+<script async defer src="/js/menu.js"></script>
+</body>
+</html>
