@@ -1,49 +1,54 @@
 baseURL = 'https://alfredhuang211.github.io/'
 languageCode = 'zh-CN'
-title = '个人学习记录'
+title = 'Alfredhuang的个人记录'
+paginate = "10"
 
 publishDir = "docs"  # output to docs dir for github pages
 
-# theme = "hugo-theme-techdoc"
-theme = "gohugo-theme-ananke"
+theme = "mainroad"
+
 
 [params]
-    recent_posts_number = 5
-    #date_format = ":date_long"
+  opengraph = true # Enable OpenGraph if true
+  schema = true # Enable Schema
+  readmore = true # Show "Read more" button in list if true
+  authorbox = true # Show authorbox at bottom of pages if true
+  toc = true # Enable Table of Contents
+  pager = true # Show pager navigation (prev/next links) at the bottom of pages if true
+  # post_meta = ["author", "date", "categories"] # Order of post meta information
+  # mainSections = ["post", "blog", "news"] # Specify section pages to show on home page and the "Recent articles" widget
+  dateformat = "2006-01-02" # Change the format of dates
+  
+[Params.author] # Used in authorbox
+name = "alfredhuang"
+bio = "一个不会写代码的产品经理不是一个好的设计师"
+avatar = "img/avatar.png"
 
-[sitemap]
-  changefreq = "monthly"
-  priority = 0.5
-  filename = "sitemap.xml"
 
-[menu]
-    [[menu.main]]
-        identifier = 'main'
-        name = "Home"
-        url = "/"
-        weight = 1
-    [[menu.main]]
-        identifier = 'hugo'
-        name = "Hugo"
-        url = "/hugo"
-        weight = 2
-    [[menu.main]]
-        identifier = 'web3'
-        name = "Web 3.0"
-        url = "/web3"
-        weight = 3
-    [[menu.main]]
-        identifier = 'k8s'
-        name = "Kubernetes"
-        url = "/k8s"
-        weight = 4
-    [[menu.main]]
-        identifier = 'serverless'
-        name = "Serverless"
-        url = "/serverless"
-        weight = 5
-    [[menu.main]]
-        identifier = 'about'
-        name = "About"
-        url = "/about"
-        weight = 100
+[Params.thumbnail]
+  visibility = ["list", "post"] # Control thumbnail visibility
+
+[Params.sidebar]
+  home = "right" # Configure layout for home page
+  list = "right"  # Configure layout for list pages
+  single = false # Configure layout for single pages
+  # Enable widgets in given order
+  widgets = ["recent", "categories", "taglist"]
+
+[Params.widgets]
+  recent_num = 5 # Set the number of articles in the "Recent articles" widget
+  categories_counter = true # Enable counter for each category in "Categories" widget
+  tags_counter = true # Enable counter for each tag in "Tags" widget
+
+
+##[[menus]]
+[[menu.main]]
+    identifier = 'main'
+    name = "Home"
+    url = "/"
+    weight = 1
+[[menu.main]]
+    identifier = 'about'
+    name = "About"
+    url = "/about"
+    weight = 100

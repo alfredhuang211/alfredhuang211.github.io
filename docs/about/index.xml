@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Abouts on 个人学习记录</title>
+    <title>about on Alfredhuang的个人记录</title>
     <link>https://alfredhuang211.github.io/about/</link>
-    <description>Recent content in Abouts on 个人学习记录</description>
+    <description>Recent content in about on Alfredhuang的个人记录</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 28 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://alfredhuang211.github.io/about/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Jun 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://alfredhuang211.github.io/about/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>关于</title>
       <link>https://alfredhuang211.github.io/about/about/</link>
       <pubDate>Tue, 28 Jun 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://alfredhuang211.github.io/about/about/</guid>
-      <description></description>
+      <description>关于站点 站点编辑人：alfredhuang&#xA;站点主要目标：记录相关个人输出</description>
     </item>
-    
   </channel>
 </rss>
