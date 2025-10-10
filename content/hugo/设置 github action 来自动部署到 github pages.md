@@ -1,3 +1,23 @@
+---
+title: "使用 github action 来自动部署 hugo 站点到 github pages"
+
+date: 2025-10-10
+
+summary: "github pages 自动部署"
+
+categories: "hugo"
+
+tags: ["hugo"]
+
+toc: true # 展示ToC
+
+---
+
+## 设置 Github Action
+
+在 github 项目根目录下新建 .github/workflows 文件夹，创建一个名为 pages.yml 的文件，内容如下：
+
+```yml
 # Sample workflow for building and deploying a Hugo site to GitHub Pages
 name: Deploy Hugo site to Pages
 
@@ -68,3 +88,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+```
+
+## 手工运行 Github Action
+
+在 github 项目的 Actions 页面，点击 Run workflow 按钮，即可手动运行 Github Action。
+
+通过查看 Action 的运行日志，了解运行情况，如果有错误根据情况排查。

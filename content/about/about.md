@@ -15,4 +15,4 @@ categories: About
 站点编辑人：alfredhuang
 
 
-站点主要目标：记录相关个人输出
+站点主要目标：记录相关个人信息
