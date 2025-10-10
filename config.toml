@@ -50,7 +50,7 @@ theme = "roadster"
     name = "Home"
     url = "/"
     weight = 1
-  [[menu.life]]
+  [[menu.main]]
     identifier = 'life'
     name = "生活"
     url = "/life"
