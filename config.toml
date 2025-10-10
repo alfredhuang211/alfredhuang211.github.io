@@ -1,14 +1,17 @@
 baseURL = 'https://alfredhuang211.github.io/'
 languageCode = 'zh-CN'
 title = 'Alfredhuang的个人记录'
-paginate = "10"
 
 publishDir = "docs"  # output to docs dir for github pages
 
-theme = "mainroad"
+theme = "roadster"
 
+[pagination]
+  disableAliases = false
+  pagerSize = 10
+  path = 'page'
 
-[params]
+[Params]
   opengraph = true # Enable OpenGraph if true
   schema = true # Enable Schema
   readmore = true # Show "Read more" button in list if true
@@ -20,9 +23,9 @@ theme = "mainroad"
   dateformat = "2006-01-02" # Change the format of dates
   
 [Params.author] # Used in authorbox
-name = "alfredhuang"
-bio = "一个不会写代码的产品经理不是一个好的设计师"
-avatar = "img/avatar.png"
+  name = "alfredhuang"
+  bio = "一个不会写代码的产品经理不是一个好的设计师"
+  avatar = "img/avatar.png"
 
 
 [Params.thumbnail]
@@ -42,12 +45,12 @@ avatar = "img/avatar.png"
 
 
 ##[[menus]]
-[[menu.main]]
+  [[menu.main]]
     identifier = 'main'
     name = "Home"
     url = "/"
     weight = 1
-[[menu.main]]
+  [[menu.main]]
     identifier = 'about'
     name = "About"
     url = "/about"
