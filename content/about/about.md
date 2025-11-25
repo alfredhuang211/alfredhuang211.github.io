@@ -2,6 +2,7 @@
 title: "关于"
 date: 2022-06-28
 description: "about"
+summary: "关于作者"
 tags: [About]
 featured_image: ""
 categories: About
