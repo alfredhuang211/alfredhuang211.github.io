@@ -19,13 +19,18 @@ theme = "roadster"
   toc = true # Enable Table of Contents
   pager = true # Show pager navigation (prev/next links) at the bottom of pages if true
   # post_meta = ["author", "date", "categories"] # Order of post meta information
-  # mainSections = ["post", "blog", "news"] # Specify section pages to show on home page and the "Recent articles" widget
+  mainSections = ["hugo", "life"] # Specify section pages to show on home page and the "Recent articles" widget
   dateformat = "2006-01-02" # Change the format of dates
   
 [Params.author] # Used in authorbox
   name = "alfredhuang"
   bio = "一个不会写代码的产品经理不是一个好的设计师"
   avatar = "img/avatar.png"
+
+# 备案号配置
+[Params.beian]
+  icp = "粤ICP备17154459号-4"
+  icp_link = "https://beian.miit.gov.cn/"
 
 
 [Params.thumbnail]
@@ -44,7 +49,6 @@ theme = "roadster"
   tags_counter = true # Enable counter for each tag in "Tags" widget
 
 
-##[[menus]]
   [[menu.main]]
     identifier = 'main'
     name = "Home"
